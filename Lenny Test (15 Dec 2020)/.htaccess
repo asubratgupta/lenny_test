@@ -1,0 +1,8 @@
+
+
+# php -- BEGIN cPanel-generated handler, do not edit
+# Impostare il pacchetto “ea-php73” come linguaggio di programmazione “PHP” predefinito.
+<IfModule mime_module>
+  AddHandler application/x-httpd-ea-php73 .php .php7 .phtml
+</IfModule>
+# php -- END cPanel-generated handler, do not edit
