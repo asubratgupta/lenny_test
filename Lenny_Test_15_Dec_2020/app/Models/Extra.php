@@ -69,7 +69,7 @@ class Extra extends Model implements HasMedia
      */
     public static $rules = [
         'name' => 'required',
-        'price' => 'nullable|numeric|min:0',
+        'price' => 'nullable|numeric',
         'food_id' => 'required|exists:foods,id',
         'extra_group_id' => 'required|exists:extra_groups,id'
     ];

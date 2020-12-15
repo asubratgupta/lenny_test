@@ -159,6 +159,7 @@ class ExtraController extends Controller
             $request->all(),
             [
                 'type' => 'Remove',
+                'price' => $request->price < 0 ? $request->price : -1 * $request->price,
             ]
         );
         $customFields = $this->customFieldRepository->findByField('custom_field_model', $this->extraRepository->model());
@@ -252,7 +253,13 @@ class ExtraController extends Controller
             Flash::error('Extra not found');
             return redirect(route('extras.index'));
         }
-        $input = $request->all();
+        $input = array_merge(
+            $request->all(),
+            [
+                'price' => $request->price < 0 ? $request->price : -1 * $request->price,
+            ]
+        );
+
         $customFields = $this->customFieldRepository->findByField('custom_field_model', $this->extraRepository->model());
         try {
             $extra = $this->extraRepository->update($input, $id);
