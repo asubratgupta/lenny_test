@@ -75,7 +75,8 @@
         dz_var1567114747144268319ble[0].mockFile = var1567114747144268319ble;
         dropzoneFields['image'] = dz_var1567114747144268319ble;
 
-        function addExtraFood(e) {   
+        function addExtraFood(e) {  
+            console.log("It's working!!!"); 
             var base_url = window.location.origin;       
             var restaurant = document.getElementById("RestaurantId");
             var restaurant_id = restaurant.options[e.selectedIndex].value;
@@ -90,6 +91,9 @@
                     },
                     success: function (result) {
                         $("#Extra-Food").html(result.extra_food);
+                    },
+                    error: function (err) {
+                        console.log(err);
                     }
                 });
             } else {

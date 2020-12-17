@@ -7,6 +7,12 @@
     <link rel="icon" type="image/png" href="{{$app_logo}}"/>
     <!-- Tell the browser to be responsive to screen width -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <script>
+        var CSRF_TOKEN ='{{ csrf_token() }}';
+        $event_data = [];
+        var base_url = {!! json_encode(url('/')) !!};
+    </script>
     <!-- Font Awesome -->
     <link rel="stylesheet" href="{{asset('plugins/font-awesome/css/font-awesome.min.css')}}">
 
