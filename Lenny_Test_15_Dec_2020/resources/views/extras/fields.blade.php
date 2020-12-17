@@ -75,25 +75,23 @@
         dz_var1567114747144268319ble[0].mockFile = var1567114747144268319ble;
         dropzoneFields['image'] = dz_var1567114747144268319ble;
 
-        function addExtraFood(e) {  
-            console.log("It's working!!!"); 
-            var base_url = window.location.origin;       
+        function addExtraFood(e) {        
+            var base_url = window.location.origin;
             var restaurant = document.getElementById("RestaurantId");
-            var restaurant_id = restaurant.options[e.selectedIndex].value;
+            var restaurant_id = restaurant.options[restaurant.selectedIndex].value;
             var category_id = e.value;
             if (category_id) {
                 $.ajax({
                     type: "GET",
                     url: base_url + "/extra-food",
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
                     data: {
                         category_id: category_id,
                         restaurant_id: restaurant_id
                     },
                     success: function (result) {
                         $("#Extra-Food").html(result.extra_food);
-                    },
-                    error: function (err) {
-                        console.log(err);
                     }
                 });
             } else {
@@ -133,7 +131,8 @@
         {!! Form::label('restaurant_id', trans("lang.extra_restaurant_id"),['class' => 'col-3 control-label
         text-right']) !!}
         <div class="col-9">
-            {!! Form::select('restaurant_id', $extraRestaurant, null, ['class' => 'select2 form-control', 'id' => 'RestaurantId']) !!}
+            {!! Form::select('restaurant_id', $extraRestaurant, null, ['class' => 'select2 form-control', 'id' =>
+            'RestaurantId']) !!}
             <div class="form-text text-muted">{{ trans("lang.extra_restaurant_id_help") }}</div>
         </div>
     </div>
@@ -143,7 +142,8 @@
         {!! Form::label('category_id', trans("lang.extra_category_id"),['class' => 'col-3 control-label text-right'])
         !!}
         <div class="col-9">
-            {!! Form::select('category_id', $extraFoodCategory, null, ['class' => 'select2 form-control', 'onchange' => 'addExtraFood(this)']) !!}
+            {!! Form::select('category_id', $extraFoodCategory, null, ['class' => 'select2 form-control', 'onchange' =>
+            'addExtraFood(this)']) !!}
             <div class="form-text text-muted">{{ trans("lang.extra_category_id_help") }}</div>
         </div>
     </div>
@@ -153,7 +153,8 @@
         @if(!empty($food))
         <div id="Extra-Food-View">
             <div class="form-group row">
-                {!! Form::label('food_id', trans("lang.extra_food_id"),['class' => 'col-3 control-label text-right']) !!}
+                {!! Form::label('food_id', trans("lang.extra_food_id"),['class' => 'col-3 control-label text-right'])
+                !!}
                 <div class="col-9">
                     {!! Form::select('food_id', $food, null, ['class' => 'select2 form-control']) !!}
                     <div class="form-text text-muted">{{ trans("lang.extra_food_id_help") }}</div>
