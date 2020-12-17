@@ -83,9 +83,7 @@
             if (category_id) {
                 $.ajax({
                     type: "GET",
-                    url: base_url + "/extra-food",
-                    contentType: 'application/json; charset=utf-8',
-                    dataType: 'json',
+                    url: base_url + "/extra-food",                    
                     data: {
                         category_id: category_id,
                         restaurant_id: restaurant_id
