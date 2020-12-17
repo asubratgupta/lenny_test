@@ -253,7 +253,7 @@ class ExtraController extends Controller
             Flash::error(__('lang.not_found', ['operator' => __('lang.extra')]));
             return redirect(route('extras.index'));
         }
-        $this->foodRepository->pushCriteria(new FoodsOfUserCriteria(auth()->id()));        
+        $this->foodRepository->pushCriteria(new FoodsOfUserCriteria(auth()->id()));
         $extraFood = $this->foodRepository->where('category_id', $extra->category_id)->get();
         $food = $extraFood->pluck('name', 'id');
         $extraGroup = $this->extraGroupRepository->pluck('name', 'id');
@@ -379,14 +379,13 @@ class ExtraController extends Controller
         $category_id = $request->category_id;
         $extraFood = $this->foodRepository->where('category_id', $category_id)->where('restaurant_id', $restaurant_id)->get();
         $food = $extraFood->pluck('name', 'id');
-
         $data['food'] = $food;
 
-        $extra_food = view('extras.extra-food', $data)->render();
+        $extra_food_view = view('extras.extra-food', $data)->render();
 
         return response()->json(array(
             'success' => true,
-            'extra_food' => $extra_food,
+            'extra_food' => $extra_food_view,
         ));
     }
 }

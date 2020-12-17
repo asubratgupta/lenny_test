@@ -80,7 +80,7 @@
             var restaurant = document.getElementById("RestaurantId");
             var restaurant_id = restaurant.options[restaurant.selectedIndex].value;
             var category_id = e.value;
-            if (category_id) {
+            if (category_id && restaurant_id) {
                 $.ajax({
                     type: "GET",
                     url: base_url + "/extra-food",                    
