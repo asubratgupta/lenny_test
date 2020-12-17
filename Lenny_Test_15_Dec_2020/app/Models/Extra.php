@@ -44,7 +44,10 @@ class Extra extends Model implements HasMedia
         'description',
         'price',
         'food_id',
-        'extra_group_id'
+        'extra_group_id',
+        'restaurant_id',
+        'category_id',
+        'user_id'
     ];
 
     /**
@@ -59,7 +62,10 @@ class Extra extends Model implements HasMedia
         'description' => 'string',
         'price' => 'double',
         'food_id' => 'integer',
-        'extra_group_id' => 'integer'
+        'extra_group_id' => 'integer',
+        'restaurant_id' => 'integer',
+        'category_id' => 'integer',
+        'user_id' => 'integer'
     ];
 
     /**
@@ -71,7 +77,9 @@ class Extra extends Model implements HasMedia
         'name' => 'required',
         'price' => 'nullable|numeric',
         'food_id' => 'required|exists:foods,id',
-        'extra_group_id' => 'required|exists:extra_groups,id'
+        'extra_group_id' => 'required|exists:extra_groups,id',
+        'restaurant_id' => 'required|exists:restaurants,id',
+        'category_id' => 'required|exists:categories,id'
     ];
 
     /**
@@ -152,6 +160,11 @@ class Extra extends Model implements HasMedia
     public function food()
     {
         return $this->belongsTo(\App\Models\Food::class, 'food_id', 'id');
+    }
+
+    public function restaurant()
+    {
+        return $this->belongsTo(\App\Models\Restaurant::class, 'restaurant_id', 'id');
     }
 
     /**

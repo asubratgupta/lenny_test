@@ -25,7 +25,9 @@ class ExtraRepository extends BaseRepository
         'description',
         'price',
         'food_id',
-        'extra_group_id'
+        'extra_group_id',
+        'restaurant_id',
+        'category_id'
     ];
 
     /**

@@ -89,7 +89,7 @@ class ExtraDataTable extends DataTable
 
             ],
             [
-                'data' => 'food.restaurant.name',
+                'data' => 'restaurant.name',
                 'title' => trans('lang.restaurant'),
 
             ],
@@ -130,16 +130,19 @@ class ExtraDataTable extends DataTable
     public function query(Extra $model)
     {
         if (auth()->user()->hasRole('admin')) {
-            return $model->newQuery()->with("food")->with("extraGroup")->with('food.restaurant');
+            return $model->newQuery()->with("food")->with("extraGroup")->with('restaurant');
         } else if (auth()->user()->hasRole('manager')) {
-            return $model->newQuery()->with("food")->with("extraGroup")->with('food.restaurant')
-                ->join("foods", "extras.food_id", "=", "foods.id")
-                ->join("user_restaurants", "foods.restaurant_id", "=", "user_restaurants.restaurant_id")
-                ->where('user_restaurants.user_id', auth()->id())
-                ->groupBy("extras.id")
-                ->select('extras.*');
+            // return $model->newQuery()->with("food")->with("extraGroup")->with('food.restaurant')
+            //     ->join("foods", "extras.food_id", "=", "foods.id")
+            //     ->join("user_restaurants", "foods.restaurant_id", "=", "user_restaurants.restaurant_id")
+            //     ->where('user_restaurants.user_id', auth()->id())
+            //     ->groupBy("extras.id")
+            //     ->select('extras.*');
+            return $model->newQuery()->with("food")->with("extraGroup")->with('restaurant')
+                 ->where('user_id', auth()->user()->id);
+              
         } else {
-            return $model->newQuery()->with("food")->with("extraGroup")->with('food.restaurant');
+            return $model->newQuery()->with("food")->with("extraGroup")->with('restaurant');
         }
     }
 

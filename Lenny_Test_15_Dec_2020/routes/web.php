@@ -33,6 +33,7 @@ Route::get('payments/paypal', 'PayPalController@index')->name('paypal.index');
 
 Route::get('firebase/sw-js', 'AppSettingController@initFirebase');
 
+Route::get('extra-food', 'ExtraController@extraFood');
 
 Route::get('storage/app/public/{id}/{conversion}/{filename?}', 'UploadController@storage');
 Route::middleware('auth')->group(function () {

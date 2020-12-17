@@ -28,9 +28,15 @@ class CreateExtrasTable extends Migration
             $table->double('price', 8, 2)->nullable()->default(0);
             $table->integer('food_id')->unsigned();
             $table->integer('extra_group_id')->unsigned();
+            $table->integer('restaurant_id')->unsigned()->nullable();
+            $table->integer('category_id')->unsigned()->nullable();
+            $table->integer('user_id')->unsigned()->nullable();
             $table->timestamps();
             $table->foreign('food_id')->references('id')->on('foods')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('extra_group_id')->references('id')->on('extra_groups')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('restaurant_id')->references('id')->on('restaurants')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
         });
     }
 

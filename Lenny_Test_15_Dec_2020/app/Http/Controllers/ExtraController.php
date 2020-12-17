@@ -15,8 +15,11 @@ use App\Criteria\Foods\FoodsOfUserCriteria;
 use App\DataTables\ExtraDataTable;
 use App\Http\Requests\CreateExtraRequest;
 use App\Http\Requests\UpdateExtraRequest;
+use App\Models\Extra;
 use App\Repositories\CustomFieldRepository;
+use App\Repositories\ExtraFoodCategoryRepository;
 use App\Repositories\ExtraGroupRepository;
+use App\Repositories\ExtraRestaurantRepository;
 use App\Repositories\ExtraRepository;
 use App\Repositories\FoodRepository;
 use App\Repositories\UploadRepository;
@@ -51,13 +54,23 @@ class ExtraController extends Controller
      * @var ExtraGroupRepository
      */
     private $extraGroupRepository;
+    /**
+     * @var ExtraRestaurantRepository
+     */
+    private $extraRestaurantRepository;
+    /**
+     * @var ExtraFoodCategoryRepository
+     */
+    private $extraFoodCategoryRepository;
 
     public function __construct(
         ExtraRepository $extraRepo,
         CustomFieldRepository $customFieldRepo,
         UploadRepository $uploadRepo,
         FoodRepository $foodRepo,
-        ExtraGroupRepository $extraGroupRepo
+        ExtraGroupRepository $extraGroupRepo,
+        ExtraRestaurantRepository $extraRestaurantRepo,
+        ExtraFoodCategoryRepository $extraFoodCategoryRepo
     ) {
         parent::__construct();
         $this->extraRepository = $extraRepo;
@@ -65,6 +78,8 @@ class ExtraController extends Controller
         $this->uploadRepository = $uploadRepo;
         $this->foodRepository = $foodRepo;
         $this->extraGroupRepository = $extraGroupRepo;
+        $this->extraRestaurantRepository = $extraRestaurantRepo;
+        $this->extraFoodCategoryRepository = $extraFoodCategoryRepo;
     }
 
     /**
@@ -87,15 +102,24 @@ class ExtraController extends Controller
     public function create()
     {
         $this->foodRepository->pushCriteria(new FoodsOfUserCriteria(auth()->id()));
-        $food = $this->foodRepository->groupedByRestaurants();
         $extraGroup = $this->extraGroupRepository->pluck('name', 'id');
+        if (auth()->user()->hasRole('admin')) {
+            $extraRestaurant = $this->extraRestaurantRepository->pluck('name', 'id');
+        } else {
+            $extraRestaurant = $this->extraRestaurantRepository->whereHas('users', function ($q) {
+                $q->where('user_id', auth()->user()->id);
+            })->get();
+            $extraRestaurant = $extraRestaurant->pluck('name', 'id');
+        }
+
+        $extraFoodCategory = $this->extraFoodCategoryRepository->pluck('name', 'id');
 
         $hasCustomField = in_array($this->extraRepository->model(), setting('custom_field_models', []));
         if ($hasCustomField) {
             $customFields = $this->customFieldRepository->findByField('custom_field_model', $this->extraRepository->model());
             $html = generateCustomField($customFields);
         }
-        return view('extras.create')->with("customFields", isset($html) ? $html : false)->with("food", $food)->with("extraGroup", $extraGroup);
+        return view('extras.create')->with("customFields", isset($html) ? $html : false)->with("extraGroup", $extraGroup)->with("extraRestaurant", $extraRestaurant)->with("extraFoodCategory", $extraFoodCategory);
     }
 
     /**
@@ -111,6 +135,7 @@ class ExtraController extends Controller
             $request->all(),
             [
                 'type' => 'Add',
+                'user_id' => auth()->user()->id,
             ]
         );
         $customFields = $this->customFieldRepository->findByField('custom_field_model', $this->extraRepository->model());
@@ -135,15 +160,23 @@ class ExtraController extends Controller
     public function removeExtra()
     {
         $this->foodRepository->pushCriteria(new FoodsOfUserCriteria(auth()->id()));
-        $food = $this->foodRepository->groupedByRestaurants();
         $extraGroup = $this->extraGroupRepository->pluck('name', 'id');
+        if (auth()->user()->hasRole('admin')) {
+            $extraRestaurant = $this->extraRestaurantRepository->pluck('name', 'id');
+        } else {
+            $extraRestaurant = $this->extraRestaurantRepository->whereHas('users', function ($q) {
+                $q->where('user_id', auth()->user()->id);
+            })->get();
+            $extraRestaurant = $extraRestaurant->pluck('name', 'id');
+        }
+        $extraFoodCategory = $this->extraFoodCategoryRepository->pluck('name', 'id');
 
         $hasCustomField = in_array($this->extraRepository->model(), setting('custom_field_models', []));
         if ($hasCustomField) {
             $customFields = $this->customFieldRepository->findByField('custom_field_model', $this->extraRepository->model());
             $html = generateCustomField($customFields);
         }
-        return view('extras.remove')->with("customFields", isset($html) ? $html : false)->with("food", $food)->with("extraGroup", $extraGroup);
+        return view('extras.remove')->with("customFields", isset($html) ? $html : false)->with("extraGroup", $extraGroup)->with("extraRestaurant", $extraRestaurant)->with("extraFoodCategory", $extraFoodCategory);
     }
 
     /**
@@ -159,6 +192,7 @@ class ExtraController extends Controller
             $request->all(),
             [
                 'type' => 'Remove',
+                'user_id' => auth()->user()->id,
                 'price' => $request->price < 0 ? $request->price : -1 * $request->price,
             ]
         );
@@ -219,10 +253,20 @@ class ExtraController extends Controller
             Flash::error(__('lang.not_found', ['operator' => __('lang.extra')]));
             return redirect(route('extras.index'));
         }
-        $this->foodRepository->pushCriteria(new FoodsOfUserCriteria(auth()->id()));
-        $food = $this->foodRepository->groupedByRestaurants();
+        $this->foodRepository->pushCriteria(new FoodsOfUserCriteria(auth()->id()));        
+        $extraFood = $this->foodRepository->where('category_id', $extra->category_id)->get();
+        $food = $extraFood->pluck('name', 'id');
         $extraGroup = $this->extraGroupRepository->pluck('name', 'id');
 
+        if (auth()->user()->hasRole('admin')) {
+            $extraRestaurant = $this->extraRestaurantRepository->pluck('name', 'id');
+        } else {
+            $extraRestaurant = $this->extraRestaurantRepository->whereHas('users', function ($q) {
+                $q->where('user_id', auth()->user()->id);
+            })->get();
+            $extraRestaurant = $extraRestaurant->pluck('name', 'id');
+        }
+        $extraFoodCategory = $this->extraFoodCategoryRepository->pluck('name', 'id');
 
         $customFieldsValues = $extra->customFieldsValues()->with('customField')->get();
         $customFields = $this->customFieldRepository->findByField('custom_field_model', $this->extraRepository->model());
@@ -231,7 +275,7 @@ class ExtraController extends Controller
             $html = generateCustomField($customFields, $customFieldsValues);
         }
 
-        return view('extras.edit')->with('extra', $extra)->with("customFields", isset($html) ? $html : false)->with("food", $food)->with("extraGroup", $extraGroup);
+        return view('extras.edit')->with('extra', $extra)->with('extraFoodCategory', $extraFoodCategory)->with('extraRestaurant', $extraRestaurant)->with("customFields", isset($html) ? $html : false)->with("food", $food)->with("extraGroup", $extraGroup);
     }
 
     /**
@@ -256,7 +300,7 @@ class ExtraController extends Controller
         $input = array_merge(
             $request->all(),
             [
-                'price' => $request->price < 0 ? $request->price : -1 * $request->price,
+                'price' => $extra->type == 'Remove' &&  $request->price >= 0 ? $request->price * -1 : $request->price,
             ]
         );
 
@@ -323,5 +367,26 @@ class ExtraController extends Controller
         } catch (\Exception $e) {
             Log::error($e->getMessage());
         }
+    }
+
+    /**
+     * Add Extra Food Section
+     * @param Request $request
+     */
+    public function extraFood(Request $request)
+    {
+        $restaurant_id = $request->restaurant_id;
+        $category_id = $request->category_id;
+        $extraFood = $this->foodRepository->where('category_id', $category_id)->where('restaurant_id', $restaurant_id)->get();
+        $food = $extraFood->pluck('name', 'id');
+
+        $data['food'] = $food;
+
+        $extra_food = view('extras.extra-food', $data)->render();
+
+        return response()->json(array(
+            'success' => true,
+            'extra_food' => $extra_food,
+        ));
     }
 }
