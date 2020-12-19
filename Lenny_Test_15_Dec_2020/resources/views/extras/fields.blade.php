@@ -88,9 +88,8 @@
                         category_id: category_id,
                         restaurant_id: restaurant_id
                     },
-                    success: function (result) {
-                        console.log(result);
-                        // $("#Extra-Food").html(result.extra_food);
+                    success: function (result) {                     
+                        $("#Extra-Food").html(result.extra_food);
                     }
                 });
             } else {

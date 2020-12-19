@@ -375,8 +375,6 @@ class ExtraController extends Controller
      */
     public function extraFood(Request $request)
     {
-        return "It's working";
-        die();
         $restaurant_id = $request->restaurant_id;
         $category_id = $request->category_id;
         $extraFood = $this->foodRepository->where('category_id', $category_id)->where('restaurant_id', $restaurant_id)->get();
